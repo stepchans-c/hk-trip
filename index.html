@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="zh-HK"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>香港之行 Planner</title>
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+--bg:#fff;--sf:#f6f7f9;--card:#fff;--tx:#171a21;--mu:#9aa0ad;--ln:#eceef2;--ac:#171a21;--acx:#fff;--st:#ff6f82;--stb:#fff0f2;--ke:#3d8bff;--keb:#eaf2ff;--bo:#8f6bff;--bob:#f2edff}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#101216;--sf:#181b21;--card:#181b21;--tx:#f2f3f6;--mu:#7d8493;--ln:#262a33;--ac:#f2f3f6;--acx:#101216;--stb:#3a2026;--keb:#18283f;--bob:#2a2147;--st:#ff8a99;--ke:#6aa6ff;--bo:#ab90ff}}
+:root[data-theme="dark"]{--bg:#101216;--sf:#181b21;--card:#181b21;--tx:#f2f3f6;--mu:#7d8493;--ln:#262a33;--ac:#f2f3f6;--acx:#101216;--stb:#3a2026;--keb:#18283f;--bob:#2a2147;--st:#ff8a99;--ke:#6aa6ff;--bo:#ab90ff}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;height:100%}
+body{background:var(--bg);color:var(--tx);font:14px/1.35 -apple-system,"PingFang HK","Noto Sans HK",sans-serif;display:flex;flex-direction:column;overflow:hidden}
+header{padding:12px 18px 8px}
+h1{font-size:22px;margin:0;font-weight:800;letter-spacing:-.3px}.sub{color:var(--mu);font-size:12px;margin-top:2px}
+main{flex:1;overflow-y:auto;overflow-x:hidden;padding:4px 10px 24px}
+nav{display:flex;border-top:1px solid var(--ln);background:var(--bg);padding:4px 8px 2px}
+nav button{flex:1;border:0;background:none;color:var(--mu);padding:7px 0;font-size:11px;line-height:1.3}
+nav button.on{color:var(--tx);font-weight:700}
+.chips{display:flex;gap:6px;overflow-x:auto;margin:2px 0 10px;scrollbar-width:none}
+.chip{flex:none;border:0;background:var(--sf);color:var(--mu);border-radius:99px;padding:6px 13px;font-size:12px;font-family:inherit}
+.chip.on{background:var(--ac);color:var(--acx)}
+.grid{display:grid;grid-template-columns:34px repeat(3,minmax(0,1fr));gap:4px}
+.h{position:sticky;top:-4px;z-index:3;background:var(--bg);font-weight:600;font-size:11px;color:var(--mu);text-align:center;padding:6px 0 8px;border-bottom:1px solid var(--ln)}
+.d{text-align:center;padding-top:7px}.d b{display:block;font-size:16px;line-height:1;font-weight:700}.d small{font-size:9px;color:var(--mu);display:block}.d span{font-size:10px;color:var(--mu)}.d.we b{color:var(--st)}
+.c{background:var(--sf);border-radius:10px;padding:3px;min-height:62px;display:flex;flex-direction:column;gap:3px;margin-bottom:2px}
+.c.e{color:#c4c8d2;font-size:16px;align-items:center;justify-content:center}
+.it{border-radius:7px;padding:4px 5px;font-size:11px;line-height:1.25;word-break:break-word}
+.it i{font-style:normal;font-size:8px;font-weight:800;display:block;margin-bottom:1px;letter-spacing:.4px;text-transform:uppercase}
+.it small{display:block;color:var(--mu);font-size:10px}
+.Steph{background:var(--stb)}.Steph i{color:var(--st)}.Keith{background:var(--keb)}.Keith i{color:var(--ke)}.Both{background:var(--bob)}.Both i{color:var(--bo)}
+.more{text-align:center;color:#c4c8d2;font-size:13px;line-height:1}
+.row{display:flex;align-items:center;gap:10px;background:var(--sf);border-radius:12px;padding:12px;margin:7px 0}
+.row .g{flex:1;min-width:0}.row.done .g{text-decoration:line-through;opacity:.4}
+.tag{font-size:10px;background:var(--bob);color:var(--bo);border-radius:99px;padding:2px 8px;margin-left:6px;font-weight:600}
+.x{border:0;background:none;color:var(--mu);font-size:15px;padding:4px}
+input[type=checkbox]{width:20px;height:20px;accent-color:var(--ac);flex:none}
+.bar{display:flex;gap:8px;margin:0 0 8px}
+input,select,textarea{font:inherit;font-size:16px;color:var(--tx);background:var(--sf);border:0;border-radius:12px;padding:11px;width:100%}
+.btn{background:var(--ac);color:var(--acx);border:0;border-radius:12px;padding:11px 16px;font:inherit;font-weight:600;white-space:nowrap}
+.btn.g2{background:var(--sf);color:var(--tx)}.btn.r{background:#ff5252;color:#fff}.btn.full{width:100%;margin:0 0 6px}
+#m{position:fixed;inset:0;background:#0006;display:none;align-items:flex-end;justify-content:center;z-index:9}
+#m.s{display:flex}#mb{background:var(--bg);width:100%;max-width:480px;border-radius:22px 22px 0 0;padding:18px 16px calc(18px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:10px}
+.who{display:flex;gap:6px}.who button{flex:1;padding:10px}
+.who .chip.on{background:var(--tx);color:var(--bg)}
+</style></head><body>
+<header><h1>Hong Kong</h1><div class="sub">11–28 Dec · 18 日 · Steph × Keith</div></header>
+<main id="main"></main>
+<nav id="nav"></nav>
+<div id="m"><div id="mb"></div></div>
+<script>
+const K='hktrip_v1',WHO=['Steph','Keith','Both'],SL=[['lunch','午餐 Lunch'],['aft','下午 Afternoon'],['din','晚餐 Dinner']];
+const AREAS=['尖沙咀','旺角','中環','銅鑼灣','深水埗','港島其他','新界／離島'];
+const WD=['日','一','二','三','四','五','六'];
+let S={plan:{},todos:[],eats:[]},tab='plan',filt='All',afilt='All';
+try{const r=localStorage.getItem(K);if(r)S=JSON.parse(r)}catch(e){}
+const save=()=>{try{localStorage.setItem(K,JSON.stringify(S))}catch(e){}};
+const uid=()=>Math.random().toString(36).slice(2,9);
+const esc=s=>(s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const $=id=>document.getElementById(id);
+
+function nav(){$('nav').innerHTML=[['plan','📅<br>行程'],['todo','☑️<br>To-do'],['eat','🍜<br>To-eat']].map(([k,l])=>`<button class="${tab==k?'on':''}" onclick="tab='${k}';render()">${l}</button>`).join('')}
+
+function plan(){
+  let h=`<div class="chips">${['All',...WHO].map(w=>`<button class="chip ${filt==w?'on':''}" onclick="filt='${w}';render()">${w}</button>`).join('')}</div><div class="grid"><div class="h"></div>${SL.map(s=>`<div class="h">${s[1]}</div>`).join('')}`;
+  for(let d=11;d<=28;d++){
+    const g=new Date(2026,11,d).getDay();
+    h+=`<div class="d ${g==0||g==6?'we':''}"><b>${d}</b><small>Dec</small><span>${WD[g]}</span></div>`;
+    for(const [k] of SL){
+      const key=d+'-'+k,items=(S.plan[key]||[]).filter(i=>filt=='All'||i.w==filt);
+      h+=`<div class="c ${items.length?'':'e'}" onclick="edit('plan','${key}')">${items.length?items.map(i=>`<div class="it ${i.w}" onclick="event.stopPropagation();edit('plan','${key}','${i.id}')"><i>${i.w}</i>${esc(i.t)}${i.n?`<small>${esc(i.n)}</small>`:''}</div>`).join('')+'<div class="more">+</div>':'+'}</div>`;
+    }
+  }
+  return h+'</div>';
+}
+
+function todo(){
+  return `<div class="bar"><input id="ti" placeholder="加入待辦事項…" onkeydown="if(event.key=='Enter')addTodo()"><button class="btn" onclick="addTodo()">加入</button></div>`+
+  (S.todos.map(t=>`<div class="row ${t.d?'done':''}"><input type="checkbox" ${t.d?'checked':''} onchange="tgl('todos','${t.id}')"><div class="g">${esc(t.t)}</div><button class="x" onclick="del('todos','${t.id}')">✕</button></div>`).join('')||'<p class="sub">仲未有項目</p>');
+}
+function addTodo(){const v=$('ti').value.trim();if(!v)return;S.todos.push({id:uid(),t:v,d:0});save();render()}
+
+function eat(){
+  const areas=[...new Set([...AREAS,...S.eats.map(e=>e.a).filter(Boolean)])];
+  const list=S.eats.filter(e=>afilt=='All'||e.a==afilt);
+  return `<div class="chips">${['All',...areas].map(a=>`<button class="chip ${afilt==a?'on':''}" onclick="afilt='${a}';render()">${a}</button>`).join('')}</div>
+  <button class="btn full" onclick="edit('eats')">+ 加入餐廳</button>`+
+  (list.map(e=>`<div class="row ${e.d?'done':''}"><input type="checkbox" ${e.d?'checked':''} onchange="tgl('eats','${e.id}')"><div class="g" onclick="edit('eats','','${e.id}')"><b>${esc(e.t)}</b>${e.a?`<span class="tag">${esc(e.a)}</span>`:''}${e.n?`<div class="sub">${esc(e.n)}</div>`:''}</div><button class="x" onclick="del('eats','${e.id}')">✕</button></div>`).join('')||'<p class="sub">仲未有餐廳，㩒上面加入 🍽️</p>');
+}
+
+function tgl(l,id){const o=S[l].find(x=>x.id==id);o.d=o.d?0:1;save();render()}
+function del(l,id){S[l]=S[l].filter(x=>x.id!=id);save();render()}
+
+let cur={};
+function edit(type,key,id){
+  const isPlan=type=='plan';
+  const o=id?(isPlan?S.plan[key]:S[type]).find(x=>x.id==id):{};
+  cur={type,key,id,w:o.w||'Both'};
+  const dl=AREAS.map(a=>`<option>${a}</option>`).join('');
+  $('mb').innerHTML=`<b>${isPlan?'行程':'餐廳'}</b><input id="ft" placeholder="${isPlan?'活動（例：維港夜景）':'餐廳名稱'}" value="${esc(o.t)}">
+  ${isPlan?`<div class="who">${WHO.map(w=>`<button class="chip ${cur.w==w?'on':''}" onclick="cur.w='${w}';document.querySelectorAll('.who button').forEach(b=>b.classList.toggle('on',b.textContent=='${w}'))">${w}</button>`).join('')}</div>`:`<input id="fa" list="al" placeholder="地區 tag（可自己打）" value="${esc(o.a)}"><datalist id="al">${dl}</datalist>`}
+  <textarea id="fn" rows="2" placeholder="備註（時間／地址／訂位…）">${esc(o.n)}</textarea>
+  <div class="bar"><button class="btn" style="flex:1" onclick="commit()">儲存</button>${id?`<button class="btn r" onclick="rm()">刪除</button>`:''}<button class="btn g2" onclick="closeM()">取消</button></div>`;
+  $('m').classList.add('s');$('ft').focus();
+}
+function closeM(){$('m').classList.remove('s')}
+function commit(){
+  const t=$('ft').value.trim();if(!t)return;
+  const n=$('fn').value.trim(),{type,key,id}=cur;
+  const data=type=='plan'?{t,n,w:cur.w}:{t,n,a:$('fa').value.trim()};
+  const arr=type=='plan'?(S.plan[key]=S.plan[key]||[]):S.eats;
+  if(id)Object.assign(arr.find(x=>x.id==id),data);else arr.push({id:uid(),d:0,...data});
+  save();closeM();render();
+}
+function rm(){const{type,key,id}=cur;if(type=='plan')S.plan[key]=S.plan[key].filter(x=>x.id!=id);else S.eats=S.eats.filter(x=>x.id!=id);save();closeM();render()}
+$('m').onclick=e=>{if(e.target.id=='m')closeM()};
+function render(){nav();$('main').innerHTML=tab=='plan'?plan():tab=='todo'?todo():eat()}
+render();
+</script></body></html>
