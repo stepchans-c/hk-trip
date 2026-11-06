@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-HK"><head><meta charset="utf-8">
+<html lang="zh-HK"><head><meta charset="utf-8"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="香港行程"><meta name="theme-color" content="#ffffff">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>香港之行 Planner</title>
 <style>
@@ -41,8 +41,8 @@ input,select,textarea{font:inherit;font-size:16px;color:var(--tx);background:var
 #m.s{display:flex}#mb{background:var(--bg);width:100%;max-width:480px;border-radius:22px 22px 0 0;padding:18px 16px calc(18px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:10px}
 .who{display:flex;gap:6px}.who button{flex:1;padding:10px}
 .who .chip.on{background:var(--tx);color:var(--bg)}
-</style></head><body>
-<header><h1>Hong Kong</h1><div class="sub">11–28 Dec · 18 日 · Steph × Keith</div></header>
+header{display:flex;justify-content:space-between;align-items:center}.hb button{border:0;background:var(--sf);border-radius:50%;width:38px;height:38px;font-size:16px;margin-left:6px}#toast{position:fixed;left:50%;top:calc(env(safe-area-inset-top,0px) + 8px);transform:translateX(-50%);background:var(--tx);color:var(--bg);padding:8px 14px;border-radius:99px;font-size:12px;opacity:0;transition:opacity .25s;z-index:20;pointer-events:none;white-space:nowrap}</style></head><body>
+<header><div><h1>Hong Kong</h1><div class="sub">11–28 Dec · 18 日 · Steph × Keith</div></div><div class="hb"><button onclick="pull(1)">🔄</button><button onclick="openSet()">⚙️</button></div></header><div id="toast"></div>
 <main id="main"></main>
 <nav id="nav"></nav>
 <div id="m"><div id="mb"></div></div>
@@ -52,7 +52,7 @@ const AREAS=['尖沙咀','旺角','中環','銅鑼灣','深水埗','港島其他
 const WD=['日','一','二','三','四','五','六'];
 let S={plan:{},todos:[],eats:[]},tab='plan',filt='All',afilt='All';
 try{const r=localStorage.getItem(K);if(r)S=JSON.parse(r)}catch(e){}
-const save=()=>{try{localStorage.setItem(K,JSON.stringify(S))}catch(e){}};
+const save=()=>{try{localStorage.setItem(K,JSON.stringify(S))}catch(e){};push()};
 const uid=()=>Math.random().toString(36).slice(2,9);
 const esc=s=>(s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const $=id=>document.getElementById(id);
@@ -113,5 +113,39 @@ function commit(){
 function rm(){const{type,key,id}=cur;if(type=='plan')S.plan[key]=S.plan[key].filter(x=>x.id!=id);else S.eats=S.eats.filter(x=>x.id!=id);save();closeM();render()}
 $('m').onclick=e=>{if(e.target.id=='m')closeM()};
 function render(){nav();$('main').innerHTML=tab=='plan'?plan():tab=='todo'?todo():eat()}
-render();
+
+let cfg={},ok=false,tmr;try{cfg=JSON.parse(localStorage.getItem('hk_cfg')||'{}')}catch(e){}
+// 部署時由 GitHub Actions 自動換成 Secrets 入面嘅真值（同日本版一樣）
+const BAKED={tok:'PUT_YOUR_TOKEN_HERE',gid:'PUT_YOUR_GIST_ID_HERE'};
+if(!BAKED.tok.startsWith('PUT_YOUR')&&!BAKED.gid.startsWith('PUT_YOUR'))cfg={...BAKED};
+let pend=0;
+const saveCfg=()=>{try{localStorage.setItem('hk_cfg',JSON.stringify(cfg))}catch(e){}};
+const H=()=>({Authorization:'Bearer '+cfg.tok,Accept:'application/vnd.github+json'});
+const G=()=>'https://api.github.com/gists/'+cfg.gid;
+function toast(t){const e=$('toast');e.textContent=t;e.style.opacity=1;clearTimeout(toast.t);toast.t=setTimeout(()=>e.style.opacity=0,2400)}
+async function pull(manual){
+  if(!cfg.tok||!cfg.gid){if(manual)openSet();return}
+  try{const r=await fetch(G(),{headers:H()});if(!r.ok)throw 0;const g=await r.json(),f=g.files['hk.json'];
+    const txt=f?(f.truncated?await(await fetch(f.raw_url)).text():f.content):'';
+    if(txt&&txt.trim())S=JSON.parse(txt);
+    ok=true;try{localStorage.setItem(K,JSON.stringify(S))}catch(e){}render();if(manual)toast('已同步 ✓')
+  }catch(e){toast('同步失敗，暫停儲存以免覆蓋資料')}
+}
+function push(){
+  if(!cfg.tok||!cfg.gid)return;
+  if(!ok){toast('未成功載入，暫停儲存');return}
+  pend=1;clearTimeout(tmr);tmr=setTimeout(async()=>{try{const r=await fetch(G(),{method:'PATCH',headers:{...H(),'Content-Type':'application/json'},body:JSON.stringify({files:{'hk.json':{content:JSON.stringify(S)}}})});if(!r.ok)throw 0;pend=0;toast('已儲存 ✓')}catch(e){toast('儲存失敗，請㩒 🔄 再試')}},600)
+}
+function openSet(){
+  $('mb').innerHTML=`<b>雲端同步（GitHub Gist）</b><div class="sub">Token 只存喺呢部機，唔會放上 GitHub。</div><input id="tk" type="password" placeholder="GitHub token（gist 權限）" value="${esc(cfg.tok)}"><input id="gd" placeholder="Gist ID（第二部機貼呢度）" value="${esc(cfg.gid)}"><div class="bar"><button class="btn" style="flex:1" onclick="mk()">建立新 Gist</button><button class="btn g2" style="flex:1" onclick="cn()">連接</button></div><button class="btn g2" onclick="closeM()">關閉</button>`;
+  $('m').classList.add('s')
+}
+async function mk(){
+  cfg.tok=$('tk').value.trim();
+  try{const r=await fetch('https://api.github.com/gists',{method:'POST',headers:{...H(),'Content-Type':'application/json'},body:JSON.stringify({description:'hk-trip',public:false,files:{'hk.json':{content:JSON.stringify(S)}}})});if(!r.ok)throw 0;const g=await r.json();cfg.gid=g.id;ok=true;saveCfg();$('gd').value=g.id;toast('已建立，請記低下面嘅 Gist ID')}catch(e){toast('建立失敗，檢查 token')}
+}
+function cn(){cfg.tok=$('tk').value.trim();cfg.gid=$('gd').value.trim();ok=false;saveCfg();closeM();pull(1)}
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)pull()});
+render();pull();
+setInterval(()=>{const a=document.activeElement;if(document.hidden||pend||$('m').classList.contains('s')||(a&&/INPUT|TEXTAREA/.test(a.tagName)))return;pull()},15000);
 </script></body></html>
