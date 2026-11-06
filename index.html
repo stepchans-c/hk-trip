@@ -79,8 +79,11 @@ function todo(){
 function addTodo(){const v=$('ti').value.trim();if(!v)return;S.todos.push({id:uid(),t:v,d:0});save();render()}
 
 function eat(){
-  const areas=[...new Set([...AREAS,...S.eats.map(e=>e.a).filter(Boolean)])];
-  const list=S.eats.filter(e=>afilt=='All'||e.a==afilt);
+  const used=new Set(S.eats.map(e=>e.a).filter(Boolean));
+  const areas=[...AREAS.filter(a=>used.has(a)),...[...used].filter(a=>!AREAS.includes(a))];
+  if(afilt!='All'&&!used.has(afilt))afilt='All';
+  const rk=e=>e.a?areas.indexOf(e.a):999;
+  const list=S.eats.filter(e=>afilt=='All'||e.a==afilt).sort((a,b)=>rk(a)-rk(b));
   return `<div class="chips">${['All',...areas].map(a=>`<button class="chip ${afilt==a?'on':''}" onclick="afilt='${a}';render()">${a}</button>`).join('')}</div>
   <button class="btn full" onclick="edit('eats')">+ 加入餐廳</button>`+
   (list.map(e=>`<div class="row ${e.d?'done':''}"><input type="checkbox" ${e.d?'checked':''} onchange="tgl('eats','${e.id}')"><div class="g" onclick="edit('eats','','${e.id}')"><b>${esc(e.t)}</b>${e.a?`<span class="tag">${esc(e.a)}</span>`:''}${e.n?`<div class="sub">${esc(e.n)}</div>`:''}</div><button class="x" onclick="del('eats','${e.id}')">✕</button></div>`).join('')||'<p class="sub">仲未有餐廳，㩒上面加入 🍽️</p>');
