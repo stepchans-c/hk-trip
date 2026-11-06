@@ -8,11 +8,11 @@
 @media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#101216;--sf:#181b21;--card:#181b21;--tx:#f2f3f6;--mu:#7d8493;--ln:#262a33;--ac:#f2f3f6;--acx:#101216;--stb:#3a2026;--keb:#18283f;--bob:#2a2147;--st:#ff8a99;--ke:#6aa6ff;--bo:#ab90ff}}
 :root[data-theme="dark"]{--bg:#101216;--sf:#181b21;--card:#181b21;--tx:#f2f3f6;--mu:#7d8493;--ln:#262a33;--ac:#f2f3f6;--acx:#101216;--stb:#3a2026;--keb:#18283f;--bob:#2a2147;--st:#ff8a99;--ke:#6aa6ff;--bo:#ab90ff}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html{background:var(--bg)}html,body{margin:0;height:100%}
-body{position:fixed;top:0;left:0;right:0;bottom:0;height:auto;padding-top:env(safe-area-inset-top,0px);background:var(--bg);color:var(--tx);font:14px/1.35 -apple-system,"PingFang HK","Noto Sans HK",sans-serif;display:flex;flex-direction:column;overflow:hidden}
+body{position:fixed;top:0;left:0;right:0;bottom:0;height:auto;padding-top:var(--tp,env(safe-area-inset-top,0px));background:var(--bg);color:var(--tx);font:14px/1.35 -apple-system,"PingFang HK","Noto Sans HK",sans-serif;display:flex;flex-direction:column;overflow:hidden}
 header{padding:12px 18px 8px}
 h1{font-size:22px;margin:0;font-weight:800;letter-spacing:-.3px}.sub{color:var(--mu);font-size:12px;margin-top:2px}
 main{flex:1;overflow-y:auto;overflow-x:hidden;padding:4px 10px 24px}
-nav{display:flex;border-top:1px solid var(--ln);background:var(--bg);padding:4px 8px calc(4px + env(safe-area-inset-bottom,0px))}
+nav{display:flex;border-top:1px solid var(--ln);background:var(--bg);padding:4px 8px calc(4px + var(--bp,env(safe-area-inset-bottom,0px)))}
 nav button{flex:1;border:0;background:none;color:var(--mu);padding:7px 0;font-size:11px;line-height:1.3}
 nav button.on{color:var(--tx);font-weight:700}
 .chips{display:flex;gap:6px;overflow-x:auto;margin:2px 0 10px;scrollbar-width:none}
@@ -149,6 +149,15 @@ async function mk(){
 }
 function cn(){cfg.tok=$('tk').value.trim();cfg.gid=$('gd').value.trim();ok=false;saveCfg();closeM();pull(1)}
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)pull()});
+
+function fit(){
+  const p=document.createElement('div');p.style.cssText='position:fixed;top:0;left:0;visibility:hidden;padding:env(safe-area-inset-top,0px) 0 env(safe-area-inset-bottom,0px)';
+  document.body.appendChild(p);const cs=getComputedStyle(p),t=parseFloat(cs.paddingTop)||0,b=parseFloat(cs.paddingBottom)||0;p.remove();
+  const full=window.innerHeight>=screen.height-4;
+  document.documentElement.style.setProperty('--tp',(full?t:0)+'px');
+  document.documentElement.style.setProperty('--bp',(full?b:0)+'px');
+}
+fit();addEventListener('resize',fit);addEventListener('orientationchange',fit);
 render();pull();
 setInterval(()=>{const a=document.activeElement;if(document.hidden||pend||$('m').classList.contains('s')||(a&&/INPUT|TEXTAREA/.test(a.tagName)))return;pull()},15000);
 </script></body></html>
